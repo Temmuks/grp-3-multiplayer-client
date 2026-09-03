@@ -4,7 +4,7 @@ import SockJS from 'sockjs-client';
 
 const WebSocketContext = createContext<Client | null>(null)
 
-function WebSocketProvider({ children }: {children: React.ReactNode}) {
+export function WebSocketProvider({ children }: {children: React.ReactNode}) {
     const [client, setClient] = useState<Client | null>(null)
 
     useEffect(() => {
