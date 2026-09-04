@@ -1,11 +1,17 @@
-import { useState } from "react";
-
+import { BrowserRouter, Route, Routes } from "react-router";
 import "./App.css";
+import IndexPage from "./pages/IndexPage";
+import GamePage from "./pages/GamePage";
 
 function App() {
 
   return <>
-    <h1>App</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<IndexPage />}/>
+        <Route path="/game/:gameRoomId?" element={<GamePage />}/>
+      </Routes>
+    </BrowserRouter>
   </>;
 }
 
