@@ -1,16 +1,40 @@
 import { useParams } from "react-router"
 import { useWebSocket } from "../contexts/WebSocketContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
+import type { GameRoomJoinDTO } from "../config";
 
 function GamePage() {
     const { gameRoomId } = useParams();
     const client = useWebSocket();
     const [playerId, setPlayerId] = useState<string | null>(null)
+    const [gridSize, setGridSize] = useState<number>(200)
     
+    // resolution of the canvas, not the actual rendered size
+    const canvasWidth = 1000;
+
+    // source: https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    let canvas = canvasRef.current;
+    let context = canvas?.getContext("2d");
+
     function handleGameRoomUpdate(message: IMessage){
+        // TODO: add calls to drawPixel with player's new positions
         console.log("got message")
     }
+
+    function drawPixel(x: number, y: number, color: string){
+        const pixelWidth = canvasWidth/gridSize;
+        if (!context) return;
+        context.fillStyle = color
+        
+        context.fillRect(x*pixelWidth, y*pixelWidth, pixelWidth, pixelWidth);
+    }
+
+    useEffect(() => {
+        canvas = canvasRef.current;
+        context = canvas?.getContext("2d");
+    })
 
     // Initial request to join the gameroom
     useEffect(() => {
@@ -20,9 +44,10 @@ function GamePage() {
         fetch(`http://localhost:8080/api/join/${gameRoomId}`, {
             method: "POST"
         })
-        .then(response => response.text())
-        .then(data => {
-            setPlayerId(data);
+        .then(response => response.json())
+        .then((dto: GameRoomJoinDTO)  => {
+            setPlayerId(dto.playerId);
+            setGridSize(dto.gameRoomDisplayDTO.gridSize);
         })
     })
 
@@ -52,6 +77,7 @@ function GamePage() {
         ) : (
             <p>No Game Room ID was entered in URL</p>
         )}
+        <canvas className="game-window" width={canvasWidth} height={canvasWidth} ref={canvasRef}></canvas>
     </div>
   )
 }
