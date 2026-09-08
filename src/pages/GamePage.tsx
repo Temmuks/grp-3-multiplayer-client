@@ -1,85 +1,102 @@
-import { useParams } from "react-router"
+import { useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
 import type { GameRoomJoinDTO } from "../config";
 
 function GamePage() {
-    const { gameRoomId } = useParams();
-    const client = useWebSocket();
-    const [playerId, setPlayerId] = useState<string | null>(null)
-    const [gridSize, setGridSize] = useState<number>(200)
-    
-    // resolution of the canvas, not the actual rendered size
-    const canvasWidth = 1000;
+  const { gameRoomId } = useParams();
+  const client = useWebSocket();
+  const [playerId, setPlayerId] = useState<string | null>(null);
+  const [gridSize, setGridSize] = useState<number>(200);
+  const initialized = useRef(false);
 
-    // source: https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    let canvas = canvasRef.current;
-    let context = canvas?.getContext("2d");
+  // resolution of the canvas, not the actual rendered size
+  const canvasWidth = 1000;
 
-    function handleGameRoomUpdate(message: IMessage){
-        // TODO: add calls to drawPixel with player's new positions
-        console.log("got message")
-    }
+  // source: https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  let canvas = canvasRef.current;
+  let context = canvas?.getContext("2d");
 
-    function drawPixel(x: number, y: number, color: string){
-        const pixelWidth = canvasWidth/gridSize;
-        if (!context) return;
-        context.fillStyle = color
-        
-        context.fillRect(x*pixelWidth, y*pixelWidth, pixelWidth, pixelWidth);
-    }
+  function handleGameRoomUpdate(message: IMessage) {
+    // TODO: add calls to drawPixel with player's new positions
+    // console.log("got message")
+  }
 
-    useEffect(() => {
-        canvas = canvasRef.current;
-        context = canvas?.getContext("2d");
-    })
+  function drawPixel(x: number, y: number, color: string) {
+    const pixelWidth = canvasWidth / gridSize;
+    if (!context) return;
+    context.fillStyle = color;
 
-    // Initial request to join the gameroom
-    useEffect(() => {
-        if (playerId != null){
-            return
-        }
+    context.fillRect(x * pixelWidth, y * pixelWidth, pixelWidth, pixelWidth);
+  }
+
+  useEffect(() => {
+    canvas = canvasRef.current;
+    context = canvas?.getContext("2d");
+  });
+
+  // Initial request to join the gameroom
+  //För att förhindra att vi får en dubbel join så implementerade vi en initializer.
+  //Se referens:
+  //https://taig.medium.com/prevent-react-from-triggering-useeffect-twice-307a475714d7
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+
+      if (playerId != null) {
+        return;
+      } else {
         fetch(`http://localhost:8080/api/join/${gameRoomId}`, {
-            method: "POST"
+          method: "POST",
         })
-        .then(response => response.json())
-        .then((dto: GameRoomJoinDTO)  => {
+          .then((response) => response.json())
+          .then((dto: GameRoomJoinDTO) => {
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
-        })
-    })
+          });
+      }
+    }
+  }, []);
 
-    // Websocket subscription
-    useEffect(() => {
-        if (!client){
-            return;
-        }
+  // Websocket subscription
+  useEffect(() => {
+    if (!client) {
+      return;
+    }
 
-        const subscription = client.subscribe(`/topic/game/${gameRoomId}`, handleGameRoomUpdate)
+    const subscription = client.subscribe(
+      `/topic/game/${gameRoomId}`,
+      handleGameRoomUpdate,
+    );
 
-        return () => {
-            subscription.unsubscribe()
-        }
-    }, [client])
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [client]);
   return (
     <div>
-        <h1>Game Page</h1>
-        {playerId ? (
-            <p>My player ID is {playerId}.</p>
-        ) : (
-            <p>You don't have a player ID.</p>
-        )}
+      <h1>Game Page</h1>
+      {playerId ? (
+        <p>My player ID is {playerId}.</p>
+      ) : (
+        <p>You don't have a player ID.</p>
+      )}
 
-        {gameRoomId ? (
-            <p>Game Room ID: {gameRoomId}</p>
-        ) : (
-            <p>No Game Room ID was entered in URL</p>
-        )}
-        <canvas className="game-window" width={canvasWidth} height={canvasWidth} ref={canvasRef}></canvas>
+      {gameRoomId ? (
+        <p>Game Room ID: {gameRoomId}</p>
+      ) : (
+        <p>No Game Room ID was entered in URL</p>
+      )}
+      <canvas
+        className="game-window"
+        width={canvasWidth}
+        height={canvasWidth}
+        ref={canvasRef}
+      ></canvas>
     </div>
-  )
+  );
 }
 
-export default GamePage
+export default GamePage;
