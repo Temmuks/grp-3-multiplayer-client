@@ -83,6 +83,46 @@ function GamePage() {
       subscription.unsubscribe();
     };
   }, [client]);
+
+  //Turn
+  useEffect(() => {
+    if (!client || !playerId || !gameRoomId) {
+      return;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      let direction = "";
+
+      if (event.key === "ArrowUp") {
+        direction = "up";
+      } else if (event.key === "ArrowDown") {
+        direction = "down";
+      } else if (event.key === "ArrowLeft") {
+        direction = "left";
+      } else if (event.key === "ArrowRight") {
+        direction = "right";
+      }
+
+      if (direction !== "" && client) {
+        client.publish({
+          destination: "/app/turn",
+          body: JSON.stringify({
+            playerId: playerId,
+            direction: direction,
+            gameRoomId: gameRoomId,
+          }),
+        });
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [client, playerId, gameRoomId]);
+
+
   return (
     <div>
       <h1>Game Page</h1>
