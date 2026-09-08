@@ -38,6 +38,9 @@ function GamePage() {
   });
 
   // Initial request to join the gameroom
+  //För att förhindra att vi får en dubbel join så implementerade vi en initializer.
+  //Se referens:
+  //https://taig.medium.com/prevent-react-from-triggering-useeffect-twice-307a475714d7
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
@@ -52,7 +55,6 @@ function GamePage() {
           .then((dto: GameRoomJoinDTO) => {
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
-            console.log("player has joined");
           });
       }
     }
