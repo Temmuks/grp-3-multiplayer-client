@@ -22,6 +22,14 @@ function GamePage() {
   function handleGameRoomUpdate(message: IMessage) {
     // TODO: add calls to drawPixel with player's new positions
     // console.log("got message")
+
+    JSON.parse(message.body).playerUpdateDTOList.forEach((player) => {
+      drawPixel(player.positionDTO.x, player.positionDTO.y, player.playerColor);
+
+      console.log("PLAYER POS X:" + player.positionDTO.x);
+      console.log("PLAYER POS Y:" + player.positionDTO.y);
+      console.log("PLAYER Color:" + player.playerColor);
+    });
   }
 
   function drawPixel(x: number, y: number, color: string) {
