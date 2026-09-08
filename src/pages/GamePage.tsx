@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
-import type { GameRoomJoinDTO } from "../config";
+import type { GameRoomJoinDTO, PlayerUpdateDTO } from "../config";
 
 function GamePage() {
   const { gameRoomId } = useParams();
@@ -23,12 +23,12 @@ function GamePage() {
     // TODO: add calls to drawPixel with player's new positions
     // console.log("got message")
 
-    JSON.parse(message.body).playerUpdateDTOList.forEach((player) => {
-      drawPixel(player.positionDTO.x, player.positionDTO.y, player.playerColor);
-
-      console.log("PLAYER POS X:" + player.positionDTO.x);
-      console.log("PLAYER POS Y:" + player.positionDTO.y);
-      console.log("PLAYER Color:" + player.playerColor);
+    JSON.parse(message.body).playerUpdateDTOList.forEach((playerUpdateDTO: PlayerUpdateDTO) => {
+      drawPixel(playerUpdateDTO.positionDTO.x, playerUpdateDTO.positionDTO.y, playerUpdateDTO.playerColor);
+      
+      console.log("PLAYER POS X:" + playerUpdateDTO.positionDTO.x);
+      console.log("PLAYER POS Y:" + playerUpdateDTO.positionDTO.y);
+      console.log("PLAYER Color:" + playerUpdateDTO.playerColor);
     });
   }
 
