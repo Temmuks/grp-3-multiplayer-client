@@ -12,7 +12,7 @@ function GameRoomsList() {
 
   // Vad som händer när ett meddelande från servern kommer hit från /topic/gamerooms
   function handleGameRoomsMessage(message: IMessage) {
-    let gameRoomDisplayDTOs = JSON.parse(message.body);
+    let gameRoomDisplayDTOs: GameRoomDisplayDTO[] = JSON.parse(message.body);
     setGameRooms(gameRoomDisplayDTOs);
     // console.log(JSON.parse(message.body))
   }
