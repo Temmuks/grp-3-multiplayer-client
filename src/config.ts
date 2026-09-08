@@ -11,3 +11,8 @@ export type GameRoomDisplayDTO = {
     gridSize: number,
     gameRoomStatus: string
 }
+
+export type GameRoomJoinDTO = {
+    playerId: string,
+    gameRoomDisplayDTO: GameRoomDisplayDTO
+}
