@@ -1,6 +1,6 @@
 import { useParams } from "react-router"
 import { useWebSocket } from "../contexts/WebSocketContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
 
 function GamePage() {
@@ -8,9 +8,26 @@ function GamePage() {
     const client = useWebSocket();
     const [playerId, setPlayerId] = useState<string | null>(null)
     
+    // source: https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    let canvas = canvasRef.current;
+    let context = canvas?.getContext("2d");
+
     function handleGameRoomUpdate(message: IMessage){
         console.log("got message")
     }
+
+    function drawPixel(x: number, y: number, color: string){
+        if (!context) return;
+        context.fillStyle = color
+        context.fillRect(x*10, y*10, 10, 10);
+    }
+
+    useEffect(() => {
+        canvas = canvasRef.current;
+        context = canvas?.getContext("2d");
+        drawPixel(30,30,"blue");
+    })
 
     // Initial request to join the gameroom
     useEffect(() => {
@@ -52,7 +69,7 @@ function GamePage() {
         ) : (
             <p>No Game Room ID was entered in URL</p>
         )}
-        <canvas width={1000} height={1000}></canvas>
+        <canvas width={1000} height={1000} ref={canvasRef}></canvas>
     </div>
   )
 }
