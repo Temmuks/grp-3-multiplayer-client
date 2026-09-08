@@ -52,6 +52,7 @@ function GamePage() {
         ) : (
             <p>No Game Room ID was entered in URL</p>
         )}
+        <canvas width={1000} height={1000}></canvas>
     </div>
   )
 }
