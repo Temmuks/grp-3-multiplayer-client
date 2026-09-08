@@ -11,7 +11,10 @@ export type GameRoomDisplayDTO = {
     playerCount: number,
     maxPlayers: number,
     gridSize: number,
-    gameRoomStatus: string
+    gameRoomStatus: GameState,
+    gameRoomOwner: string,
+    winner: string,
+    winnerColor: string
 }
 
 export type GameRoomJoinDTO = {
