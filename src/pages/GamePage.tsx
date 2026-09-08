@@ -5,6 +5,8 @@ import type { IMessage } from "@stomp/stompjs";
 import type { GameRoomJoinDTO, PlayerUpdateDTO } from "../config";
 
 function GamePage() {
+  const api = import.meta.env.VITE_API_URL ?? "";
+
   const { gameRoomId } = useParams();
   const client = useWebSocket();
   const [playerId, setPlayerId] = useState<string | null>(null);
@@ -23,13 +25,19 @@ function GamePage() {
     // TODO: add calls to drawPixel with player's new positions
     // console.log("got message")
 
-    JSON.parse(message.body).playerUpdateDTOList.forEach((playerUpdateDTO: PlayerUpdateDTO) => {
-      drawPixel(playerUpdateDTO.positionDTO.x, playerUpdateDTO.positionDTO.y, playerUpdateDTO.playerColor);
-      
-      console.log("PLAYER POS X:" + playerUpdateDTO.positionDTO.x);
-      console.log("PLAYER POS Y:" + playerUpdateDTO.positionDTO.y);
-      console.log("PLAYER Color:" + playerUpdateDTO.playerColor);
-    });
+    JSON.parse(message.body).playerUpdateDTOList.forEach(
+      (playerUpdateDTO: PlayerUpdateDTO) => {
+        drawPixel(
+          playerUpdateDTO.positionDTO.x,
+          playerUpdateDTO.positionDTO.y,
+          playerUpdateDTO.playerColor,
+        );
+
+        // console.log("PLAYER POS X:" + playerUpdateDTO.positionDTO.x);
+        // console.log("PLAYER POS Y:" + playerUpdateDTO.positionDTO.y);
+        // console.log("PLAYER Color:" + playerUpdateDTO.playerColor);
+      },
+    );
   }
 
   function drawPixel(x: number, y: number, color: string) {
@@ -38,6 +46,7 @@ function GamePage() {
     context.fillStyle = color;
 
     context.fillRect(x * pixelWidth, y * pixelWidth, pixelWidth, pixelWidth);
+    console.log(gridSize);
   }
 
   useEffect(() => {
@@ -56,7 +65,7 @@ function GamePage() {
       if (playerId != null) {
         return;
       } else {
-        fetch(`http://localhost:8080/api/join/${gameRoomId}`, {
+        fetch(`${api}/api/join/${gameRoomId}`, {
           method: "POST",
         })
           .then((response) => response.json())
@@ -121,7 +130,6 @@ function GamePage() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [client, playerId, gameRoomId]);
-
 
   return (
     <div>

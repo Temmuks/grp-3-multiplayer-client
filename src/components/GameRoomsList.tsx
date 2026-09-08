@@ -5,6 +5,8 @@ import type { IMessage } from "@stomp/stompjs";
 import type { GameRoomDisplayDTO } from "../config";
 
 function GameRoomsList() {
+  const api = import.meta.env.VITE_API_URL ?? "";
+
   const client = useWebSocket();
   const [gameRooms, setGameRooms] = useState<GameRoomDisplayDTO[]>([]);
   const [maxPlayers, setMaxPlayers] = useState(4);
@@ -52,7 +54,7 @@ function GameRoomsList() {
       </select>
       <button
         onClick={() => {
-          fetch("http://localhost:8080/api/gameRooms", {
+          fetch(api + "/api/gameRooms", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
