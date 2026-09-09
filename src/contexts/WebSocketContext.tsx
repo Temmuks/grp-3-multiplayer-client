@@ -1,36 +1,36 @@
-import { Client } from "@stomp/stompjs"
-import { createContext, useContext, useEffect, useState } from "react"
-import SockJS from 'sockjs-client';
+import { Client } from "@stomp/stompjs";
+import { createContext, useContext, useEffect, useState } from "react";
+import SockJS from "sockjs-client";
 
-const WebSocketContext = createContext<Client | null>(null)
+const WebSocketContext = createContext<Client | null>(null);
 
-export function WebSocketProvider({ children }: {children: React.ReactNode}) {
-    const [client, setClient] = useState<Client | null>(null)
+export function WebSocketProvider({ children }: { children: React.ReactNode }) {
+  const [client, setClient] = useState<Client | null>(null);
 
-    useEffect(() => {
-        const client = new Client({
-            webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
-        })
+  const api = import.meta.env.VITE_API_URL ?? "";
 
-        client.onConnect = () => {
-            setClient(client)
-        }
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () => new SockJS(api + "/ws"),
+    });
 
-        client.activate()
+    client.onConnect = () => {
+      setClient(client);
+    };
 
-        return () => {
-            client.deactivate()
-        }
-        
-    }, [])
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
+  }, []);
   return (
     <WebSocketContext.Provider value={client}>
-        {children}
+      {children}
     </WebSocketContext.Provider>
-  )
+  );
 }
 
-
 export function useWebSocket() {
-    return useContext(WebSocketContext)
+  return useContext(WebSocketContext);
 }

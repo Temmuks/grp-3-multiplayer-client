@@ -1,5 +1,6 @@
 .game-window{
-    width: 500px;
-    height: 500px;
+    width: 80vh;
+    height: 80vb;
     border: 1px solid black;
+    background-color: rgb(56, 56, 56);
 }
