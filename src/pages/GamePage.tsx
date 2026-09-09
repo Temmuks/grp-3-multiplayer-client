@@ -135,7 +135,7 @@ function GamePage() {
 
   //Startar spelet
   const onStartHandler = () => {
-    fetch(api + "/api/start", {
+    fetch(api + "/api/gameroom/start", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
