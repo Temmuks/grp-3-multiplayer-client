@@ -50,11 +50,6 @@ function GamePage() {
     console.log(gridSize);
   }
 
-  useEffect(() => {
-    canvas = canvasRef.current;
-    context = canvas?.getContext("2d");
-  });
-
   // Initial request to join the gameroom
   //För att förhindra att vi får en dubbel join så implementerade vi en initializer.
   //Se referens:
@@ -62,7 +57,6 @@ function GamePage() {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-
       if (playerId != null) {
         return;
       } else {
@@ -80,9 +74,14 @@ function GamePage() {
             setIsOwner(dto.owner);
           });
       }
+      console.log(playerId);
     }
   }, []);
 
+  useEffect(() => {
+    canvas = canvasRef.current;
+    context = canvas?.getContext("2d");
+  }, []);
   // Websocket subscription
   useEffect(() => {
     if (!client) {
@@ -97,7 +96,7 @@ function GamePage() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [client]);
+  }, [client, gridSize]);
 
   //Turn
   useEffect(() => {
