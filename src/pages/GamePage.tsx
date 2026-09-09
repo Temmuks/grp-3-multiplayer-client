@@ -12,6 +12,7 @@ function GamePage() {
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
+  const [ownerId, setOwnerId] = useState<string>("");
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -72,6 +73,7 @@ function GamePage() {
           .then((dto: GameRoomJoinDTO) => {
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
+            setOwnerId(dto.gameRoomDisplayDTO.gameRoomOwner);
           });
       }
     }
@@ -131,6 +133,21 @@ function GamePage() {
     };
   }, [client, playerId, gameRoomId]);
 
+  //Startar spelet
+  const onStartHandler = () => {
+    fetch(api + "/api/gameroom/start", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientId: localStorage.getItem("ClientId"),
+        gameRoomId: gameRoomId,
+        gameState: "IN_PROGRESS",
+      }),
+    });
+  };
+
   return (
     <div>
       <h1>Game Page</h1>
@@ -144,6 +161,11 @@ function GamePage() {
         <p>Game Room ID: {gameRoomId}</p>
       ) : (
         <p>No Game Room ID was entered in URL</p>
+      )}
+      {ownerId == localStorage.getItem("ClientId") ? (
+        <button onClick={onStartHandler}>Start</button>
+      ) : (
+        <p>Waiting for host to start</p>
       )}
       <canvas
         className="game-window"
