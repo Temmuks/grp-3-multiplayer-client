@@ -12,7 +12,7 @@ function GamePage() {
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
-  const [ownerId, setOwnerId] = useState<string>("");
+  const [isOwner, setIsOwner] = useState<boolean>(false);
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -50,11 +50,6 @@ function GamePage() {
     console.log(gridSize);
   }
 
-  useEffect(() => {
-    canvas = canvasRef.current;
-    context = canvas?.getContext("2d");
-  });
-
   // Initial request to join the gameroom
   //För att förhindra att vi får en dubbel join så implementerade vi en initializer.
   //Se referens:
@@ -62,23 +57,31 @@ function GamePage() {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-
       if (playerId != null) {
         return;
       } else {
         fetch(`${api}/api/join/${gameRoomId}`, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(localStorage.getItem("ClientId")),
         })
           .then((response) => response.json())
           .then((dto: GameRoomJoinDTO) => {
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
-            setOwnerId(dto.gameRoomDisplayDTO.gameRoomOwner);
+            setIsOwner(dto.owner);
           });
       }
+      console.log(playerId);
     }
   }, []);
 
+  useEffect(() => {
+    canvas = canvasRef.current;
+    context = canvas?.getContext("2d");
+  }, []);
   // Websocket subscription
   useEffect(() => {
     if (!client) {
@@ -93,7 +96,7 @@ function GamePage() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [client]);
+  }, [client, gridSize]);
 
   //Turn
   useEffect(() => {
@@ -162,7 +165,7 @@ function GamePage() {
       ) : (
         <p>No Game Room ID was entered in URL</p>
       )}
-      {ownerId == localStorage.getItem("ClientId") ? (
+      {isOwner ? (
         <button onClick={onStartHandler}>Start</button>
       ) : (
         <p>Waiting for host to start</p>
