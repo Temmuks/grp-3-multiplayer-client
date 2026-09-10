@@ -127,7 +127,17 @@ function GamePage() {
           }),
         });
       }
-    }
+
+      if (event.key == " " && client){
+        client.publish({
+          destination: "/app/dash",
+          body: JSON.stringify({
+            playerId: playerId,
+            gameRoomId: gameRoomId,
+          }),
+        });
+      }
+      }
 
     window.addEventListener("keydown", handleKeyDown);
 
