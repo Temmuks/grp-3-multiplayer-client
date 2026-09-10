@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
-import type { GameRoomJoinDTO, PlayerUpdateDTO } from "../config";
+import type { GameRoomJoinDTO, PlayerUpdateDTO, PositionDTO } from "../config";
 
 function GamePage() {
   const api = import.meta.env.VITE_API_URL ?? "";
@@ -28,11 +28,14 @@ function GamePage() {
 
     JSON.parse(message.body).playerUpdateDTOList.forEach(
       (playerUpdateDTO: PlayerUpdateDTO) => {
-        drawPixel(
-          playerUpdateDTO.positionDTO.x,
-          playerUpdateDTO.positionDTO.y,
-          playerUpdateDTO.playerColor,
-        );
+        playerUpdateDTO.positions.forEach((positionDTO: PositionDTO) => {
+            drawPixel(
+              positionDTO.x,
+              positionDTO.y,
+              playerUpdateDTO.playerColor,
+            );
+
+        })
 
         // console.log("PLAYER POS X:" + playerUpdateDTO.positionDTO.x);
         // console.log("PLAYER POS Y:" + playerUpdateDTO.positionDTO.y);
