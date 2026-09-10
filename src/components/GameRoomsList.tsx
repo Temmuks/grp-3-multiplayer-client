@@ -68,9 +68,16 @@ function GameRoomsList() {
       >
         skapa
       </button>
+
+      <button onClick={() => {
+        fetch(api + "/api/gameRooms", {
+          method: "Delete"
+        })
+      }}>Delete All Rooms</button>
       <div>
         {gameRooms.map((gameRoom) => (
           <GameRoomCard gameRoom={gameRoom} key={gameRoom.gameRoomId} />
+          
         ))}
       </div>
     </div>
