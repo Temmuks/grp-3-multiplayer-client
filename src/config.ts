@@ -28,7 +28,7 @@ export type PositionDTO = {
 export type PlayerUpdateDTO = {
   playerId: string;
   playerColor: string;
-  positionDTO: PositionDTO;
+  positions: PositionDTO[];
 };
 
 export type GameRoomUpdateDTO = {
