@@ -3,6 +3,9 @@ import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
 import type { GameRoomJoinDTO, PlayerUpdateDTO, PositionDTO } from "../config";
+import useSound from "use-sound";
+
+import electricSfx from "../../sounds/274210__littlerobotsoundfactory__whoosh_electric_01.wav"
 
 function GamePage() {
   const api = import.meta.env.VITE_API_URL ?? "";
@@ -13,6 +16,8 @@ function GamePage() {
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [dashesLeft, setDashesLeft] = useState<number>(3);
+  const [electricSound] = useSound(electricSfx);
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -131,7 +136,10 @@ function GamePage() {
         });
       }
 
-      if (event.key == " " && client){
+      if (event.key == " " && client && dashesLeft > 0){
+        setDashesLeft(prev => prev-1);
+        electricSound();
+        console.log(dashesLeft);
         client.publish({
           destination: "/app/dash",
           body: JSON.stringify({
@@ -151,7 +159,7 @@ function GamePage() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [client, playerId, gameRoomId]);
+  }, [client, playerId, gameRoomId, dashesLeft]);
 
   //Startar spelet
   const onStartHandler = () => {
