@@ -18,6 +18,7 @@ export type GameRoomJoinDTO = {
   playerId: string;
   gameRoomDisplayDTO: GameRoomDisplayDTO;
   owner: boolean;
+  playerColor: string;
 };
 
 export type PositionDTO = {
