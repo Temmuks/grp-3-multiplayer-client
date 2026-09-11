@@ -2,7 +2,8 @@ import { useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
-import type { GameRoomJoinDTO, PlayerUpdateDTO } from "../config";
+import type { GameRoomJoinDTO, PlayerUpdateDTO, PositionDTO } from "../config";
+import CircleComponent from "../components/CircleComponent";
 
 function GamePage() {
   const api = import.meta.env.VITE_API_URL ?? "";
@@ -13,6 +14,9 @@ function GamePage() {
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [isStarted, setIsStarted] = useState<boolean>(false);
+  const [playerColor, setPlayerColor] = useState<string>("");
+  const [winnerColor, setWinnerColor] = useState<string>("");
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -26,13 +30,13 @@ function GamePage() {
     // TODO: add calls to drawPixel with player's new positions
     // console.log("got message")
 
+    setWinnerColor(JSON.parse(message.body).winnerColor);
+
     JSON.parse(message.body).playerUpdateDTOList.forEach(
       (playerUpdateDTO: PlayerUpdateDTO) => {
-        drawPixel(
-          playerUpdateDTO.positionDTO.x,
-          playerUpdateDTO.positionDTO.y,
-          playerUpdateDTO.playerColor,
-        );
+        playerUpdateDTO.positions.forEach((positionDTO: PositionDTO) => {
+          drawPixel(positionDTO.x, positionDTO.y, playerUpdateDTO.playerColor);
+        });
 
         // console.log("PLAYER POS X:" + playerUpdateDTO.positionDTO.x);
         // console.log("PLAYER POS Y:" + playerUpdateDTO.positionDTO.y);
@@ -72,6 +76,7 @@ function GamePage() {
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
             setIsOwner(dto.owner);
+            setPlayerColor(dto.playerColor);
           });
       }
       console.log(playerId);
@@ -127,7 +132,20 @@ function GamePage() {
           }),
         });
       }
+
+      if (event.key == " " && client) {
+        client.publish({
+          destination: "/app/dash",
+          body: JSON.stringify({
+            playerId: playerId,
+            gameRoomId: gameRoomId,
+          }),
+        });
+      }
     }
+
+    // Here you could for examplge add some "electricity/charge" sound for successfull dash.
+    // Maybe some "bounce" sound for successful jump
 
     window.addEventListener("keydown", handleKeyDown);
 
@@ -149,13 +167,17 @@ function GamePage() {
         gameState: "IN_PROGRESS",
       }),
     });
+    setIsStarted(true);
   };
 
   return (
     <div>
       <h1>Game Page</h1>
-      {playerId ? (
-        <p>My player ID is {playerId}.</p>
+      {playerColor ? (
+        <div>
+          <p>Your color is: </p>
+          <CircleComponent color={playerColor} />
+        </div>
       ) : (
         <p>You don't have a player ID.</p>
       )}
@@ -165,11 +187,21 @@ function GamePage() {
       ) : (
         <p>No Game Room ID was entered in URL</p>
       )}
-      {isOwner ? (
+      {isOwner && !isStarted ? (
         <button onClick={onStartHandler}>Start</button>
       ) : (
         <p>Waiting for host to start</p>
       )}
+      {/* Skriver ut vinnarens färg */}
+      {winnerColor ? (
+        <div>
+          <h2>The winner is: {winnerColor}</h2>
+          <CircleComponent color={winnerColor} />
+        </div>
+      ) : (
+        <p></p>
+      )}
+
       <canvas
         className="game-window"
         width={canvasWidth}
