@@ -193,9 +193,15 @@ function GamePage() {
         <p>Waiting for host to start</p>
       )}
       {/* Skriver ut vinnarens färg */}
-      {winnerColor ? <h2>The winner is: {winnerColor}</h2> : <p></p>}
+      {winnerColor ? (
+        <div>
+          <h2>The winner is: {winnerColor}</h2>
+          <CircleComponent color={winnerColor} />
+        </div>
+      ) : (
+        <p></p>
+      )}
 
-      <div className="circle" style={{ background: winnerColor }}></div>
       <canvas
         className="game-window"
         width={canvasWidth}
