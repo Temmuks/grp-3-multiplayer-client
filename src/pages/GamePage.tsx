@@ -58,8 +58,8 @@ function GamePage() {
     if (!initialized.current) {
       initialized.current = true;
       if (playerId != null) {
-        return;
-      } else {
+          return;
+        } else {
         fetch(`${api}/api/join/${gameRoomId}`, {
           method: "POST",
           headers: {
@@ -127,6 +127,9 @@ function GamePage() {
           }),
         });
       }
+      
+      // Here you could for examplge add some "electricity/charge" sound for successfull dash.
+      // Maybe some "bounce" sound for successful jump
     }
 
     window.addEventListener("keydown", handleKeyDown);
