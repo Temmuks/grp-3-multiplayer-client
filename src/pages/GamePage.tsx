@@ -144,7 +144,7 @@ function GamePage() {
       
       // Here you could for examplge add some "electricity/charge" sound for successfull dash.
       // Maybe some "bounce" sound for successful jump
-    }
+    
 
     window.addEventListener("keydown", handleKeyDown);
 
