@@ -29,5 +29,10 @@
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"
+  },
+  "allowScripts": {
+    "bufferutil@4.1.0": true,
+    "es5-ext@0.10.64": true,
+    "utf-8-validate@5.0.10": true
   }
 }
