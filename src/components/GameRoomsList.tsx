@@ -10,7 +10,7 @@ function GameRoomsList() {
   const client = useWebSocket();
   const [gameRooms, setGameRooms] = useState<GameRoomDisplayDTO[]>([]);
   const [maxPlayers, setMaxPlayers] = useState(4);
-  const maxPlayerOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  const maxPlayerOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
   // Vad som händer när ett meddelande från servern kommer hit från /topic/gamerooms
   function handleGameRoomsMessage(message: IMessage) {
@@ -31,14 +31,16 @@ function GameRoomsList() {
       handleGameRoomsMessage,
     );
     //https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
-    localStorage.setItem("ClientId", self.crypto.randomUUID());
+    if (localStorage.getItem("ClientId") === null) {
+      localStorage.setItem("ClientId", self.crypto.randomUUID());
+    }
     return () => {
       subscription.unsubscribe();
     };
   }, [client]);
 
   return (
-    <div>
+    <div className="indexpageelements">
       <h3>Game list</h3>
       {/* test bara */}
       <label>Max players</label>
@@ -52,32 +54,37 @@ function GameRoomsList() {
           </option>
         ))}
       </select>
-      <button
-        onClick={() => {
-          fetch(api + "/api/gameRooms", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              clientId: localStorage.getItem("ClientId"),
-              maxPlayers: maxPlayers,
-            }),
-          });
-        }}
-      >
-        skapa
-      </button>
+      <div className="button-group">
+        <button
+          onClick={() => {
+            fetch(api + "/api/gameRooms", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                clientId: localStorage.getItem("ClientId"),
+                maxPlayers: maxPlayers,
+              }),
+            });
+          }}
+        >
+          Create Room
+        </button>
 
-      <button onClick={() => {
-        fetch(api + "/api/gameRooms", {
-          method: "Delete"
-        })
-      }}>Delete All Rooms</button>
-      <div>
+        <button
+          onClick={() => {
+            fetch(api + "/api/gameRooms", {
+              method: "Delete",
+            });
+          }}
+        >
+          Delete All Rooms
+        </button>
+      </div>
+      <div className="game-rooms-list">
         {gameRooms.map((gameRoom) => (
           <GameRoomCard gameRoom={gameRoom} key={gameRoom.gameRoomId} />
-          
         ))}
       </div>
     </div>

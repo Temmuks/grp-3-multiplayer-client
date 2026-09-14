@@ -179,10 +179,12 @@ function GamePage() {
   };
 
   return (
-    <div>
+    <div className="gamepagecontainer">
+      <div className="gamepage-header">
       <h1>Game Page</h1>
+      <div className="game-status-panel">
       {playerColor ? (
-        <div>
+        <div className="player-color-info">
           <p>Your color is: </p>
           <CircleComponent color={playerColor} />
         </div>
@@ -191,24 +193,26 @@ function GamePage() {
       )}
 
       {gameRoomId ? (
-        <p>Game Room ID: {gameRoomId}</p>
+        <p className="room-id-text">Game Room ID: {gameRoomId}</p>
       ) : (
-        <p>No Game Room ID was entered in URL</p>
+        <p className="room-id-text">No Game Room ID was entered in URL</p>
       )}
       {isOwner && !isStarted ? (
-        <button onClick={onStartHandler}>Start</button>
+        <button className="start-btn" onClick={onStartHandler}>Start</button>
       ) : (
-        <p>Waiting for host to start</p>
+        <p className="waiting-text">Waiting for host to start</p>
       )}
+      </div>
       {/* Skriver ut vinnarens färg */}
       {winnerColor ? (
-        <div>
+        <div className="winner-banner">
           <h2>The winner is: {winnerColor}</h2>
           <CircleComponent color={winnerColor} />
         </div>
       ) : (
         <p></p>
       )}
+      </div>
 
       <canvas
         className="game-window"

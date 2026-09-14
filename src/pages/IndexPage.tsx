@@ -1,9 +1,10 @@
 import GameRoomsList from "../components/GameRoomsList"
+import "../App.css"
 
 function IndexPage() {
   return (
-    <div>
-        <h1>Index Page</h1>
+    <div className="landingpagecontainer">
+        <h1>Snake Attack</h1>
         <GameRoomsList />
     </div>
   )
