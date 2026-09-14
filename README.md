@@ -36,15 +36,16 @@ The game idea is that you will be a snake that leaves a trail behind you, other 
 * Client gets playerID(makes it possible to steer other players)
 
 ## Team
-**Boren90:** https://github.com/Luythen
+[**Boren90**](https://github.com/Boren90)
 <br>
 <br>
-**Temmuks:** https://github.com/Temmuks
+[**Temmuks**](https://github.com/Temmuks)
 <br>
 <br>
-**williameliasson:** https://github.com/williameliasson
+[**williameliasson**](https://github.com/williameliasson)
 <br>
 <br>
-**WWolfburg:** https://github.com/WWolfburg
+[**WWolfburg**](https://github.com/WWolfburg)
 
+## Server Repo
 [Server repo](https://github.com/Temmuks/grp-3-multiplayer-server)
