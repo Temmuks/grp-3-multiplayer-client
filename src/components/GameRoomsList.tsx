@@ -38,7 +38,7 @@ function GameRoomsList() {
   }, [client]);
 
   return (
-    <div>
+    <div className="indexpageelements">
       <h3>Game list</h3>
       {/* test bara */}
       <label>Max players</label>
@@ -52,6 +52,7 @@ function GameRoomsList() {
           </option>
         ))}
       </select>
+      <div className="button-group">
       <button
         onClick={() => {
           fetch(api + "/api/gameRooms", {
@@ -66,7 +67,7 @@ function GameRoomsList() {
           });
         }}
       >
-        skapa
+        Create Room
       </button>
 
       <button onClick={() => {
@@ -74,7 +75,8 @@ function GameRoomsList() {
           method: "Delete"
         })
       }}>Delete All Rooms</button>
-      <div>
+      </div>
+      <div className="game-rooms-list">
         {gameRooms.map((gameRoom) => (
           <GameRoomCard gameRoom={gameRoom} key={gameRoom.gameRoomId} />
           
