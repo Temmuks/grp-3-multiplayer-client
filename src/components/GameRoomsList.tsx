@@ -10,7 +10,7 @@ function GameRoomsList() {
   const client = useWebSocket();
   const [gameRooms, setGameRooms] = useState<GameRoomDisplayDTO[]>([]);
   const [maxPlayers, setMaxPlayers] = useState(4);
-  const maxPlayerOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  const maxPlayerOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
   // Vad som händer när ett meddelande från servern kommer hit från /topic/gamerooms
   function handleGameRoomsMessage(message: IMessage) {
