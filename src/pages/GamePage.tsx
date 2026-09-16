@@ -56,12 +56,10 @@ function GamePage() {
   }
 
   function handlePlayerJoin(message: IMessage){
-    const color = message.body;
-    // update playerColors list
-        if (!playerColors.includes(color)){
-          setPlayerColors((prev) => [...prev, color])
-          console.log(color + " joined")
-        }
+    const colors: string[] = JSON.parse(message.body);
+    // update playerColors list    
+    setPlayerColors(colors)
+        
   }
 
   function drawPixel(x: number, y: number, color: string) {
@@ -94,6 +92,7 @@ function GamePage() {
           .then((dto: GameRoomJoinDTO) => {
             setMaxPlayers(dto.maxPlayers);
             setPlayerId(dto.playerId);
+            setPlayerColors(dto.playerColors);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
             setIsOwner(dto.owner);
             setPlayerColor(dto.playerColor);
