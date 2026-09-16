@@ -7,6 +7,7 @@ import useSound from "use-sound";
 
 import electricSfx from "../../sounds/274210__littlerobotsoundfactory__whoosh_electric_01.wav"
 import CircleComponent from "../components/CircleComponent";
+import PlayerColorsList from "../components/PlayerColorsList";
 
 function GamePage() {
   const api = import.meta.env.VITE_API_URL ?? "";
@@ -22,6 +23,8 @@ function GamePage() {
   const [isStarted, setIsStarted] = useState<boolean>(false);
   const [playerColor, setPlayerColor] = useState<string>("");
   const [winnerColor, setWinnerColor] = useState<string>("");
+  const [playerColors, setPlayerColors] = useState<string[]>([]);
+  const [maxPlayers, setMaxPlayers] = useState<number>(4);
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -36,9 +39,11 @@ function GamePage() {
     // console.log("got message")
 
     setWinnerColor(JSON.parse(message.body).winnerColor);
+    console.log("playerupdatedto")
 
     JSON.parse(message.body).playerUpdateDTOList.forEach(
       (playerUpdateDTO: PlayerUpdateDTO) => {
+        // draw the positions of the players
         playerUpdateDTO.positions.forEach((positionDTO: PositionDTO) => {
           drawPixel(positionDTO.x, positionDTO.y, playerUpdateDTO.playerColor);
         });
@@ -48,6 +53,15 @@ function GamePage() {
         // console.log("PLAYER Color:" + playerUpdateDTO.playerColor);
       },
     );
+  }
+
+  function handlePlayerJoin(message: IMessage){
+    const color = message.body;
+    // update playerColors list
+        if (!playerColors.includes(color)){
+          setPlayerColors((prev) => [...prev, color])
+          console.log(color + " joined")
+        }
   }
 
   function drawPixel(x: number, y: number, color: string) {
@@ -78,6 +92,7 @@ function GamePage() {
         })
           .then((response) => response.json())
           .then((dto: GameRoomJoinDTO) => {
+            setMaxPlayers(dto.maxPlayers);
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
             setIsOwner(dto.owner);
@@ -107,6 +122,21 @@ function GamePage() {
       subscription.unsubscribe();
     };
   }, [client, gridSize]);
+
+  useEffect(() => {
+    if (!client) {
+      return;
+    }
+
+    const subscription = client.subscribe(
+      `/topic/game/${gameRoomId}/playerjoin`,
+      handlePlayerJoin
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [client])
 
   //Turn
   useEffect(() => {
@@ -182,6 +212,11 @@ function GamePage() {
     <div className="gamepagecontainer">
       <div className="gamepage-header">
       <h1>Game Page</h1>
+      {playerColors ? (
+        <PlayerColorsList maxPlayers={maxPlayers} colors={playerColors}/>
+      ) : (
+        <p>No colors</p>
+      )}
       <div className="game-status-panel">
       {playerColor ? (
         <div className="player-color-info">
@@ -191,6 +226,7 @@ function GamePage() {
       ) : (
         <p>You don't have a player ID.</p>
       )}
+      
 
       {gameRoomId ? (
         <p className="room-id-text">Game Room ID: {gameRoomId}</p>
