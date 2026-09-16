@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
@@ -14,6 +14,7 @@ function GamePage() {
 
   const { gameRoomId } = useParams();
   const client = useWebSocket();
+  const navigate = useNavigate();
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
@@ -228,7 +229,7 @@ function GamePage() {
       
 
       {gameRoomId ? (
-        <p className="room-id-text">Game Room ID: {gameRoomId}</p>
+        <></>
       ) : (
         <p className="room-id-text">No Game Room ID was entered in URL</p>
       )}
@@ -255,6 +256,11 @@ function GamePage() {
         height={canvasWidth}
         ref={canvasRef}
       ></canvas>
+      <div>
+        <button onClick={() => {navigate("/")}}>
+          Back
+        </button>
+      </div>
     </div>
   );
 }

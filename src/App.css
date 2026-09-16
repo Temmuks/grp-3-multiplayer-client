@@ -104,7 +104,7 @@
         background-color: #444444;
     }
 }
-.indexpageelements button {
+button {
     margin-top: 8px;
     cursor: pointer;
     background-color: #383838;
@@ -113,7 +113,7 @@
     padding: 8px 12px;
     border-radius: 4px;
 }
-.indexpageelements button:hover {
+button:hover {
     background-color: #4a4a4a;
 }
 
