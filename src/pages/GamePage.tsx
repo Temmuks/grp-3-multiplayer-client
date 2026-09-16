@@ -213,7 +213,7 @@ function GamePage() {
       <div className="gamepage-header">
       <h1>Game Page</h1>
       {playerColors ? (
-        <PlayerColorsList maxPlayers={maxPlayers} colors={playerColors}/>
+        <PlayerColorsList winnerColor={winnerColor} maxPlayers={maxPlayers} colors={playerColors}/>
       ) : (
         <p>No colors</p>
       )}
@@ -221,7 +221,7 @@ function GamePage() {
       {playerColor ? (
         <div className="player-color-info">
           <p>Your color is: </p>
-          <CircleComponent color={playerColor} />
+          <CircleComponent isWinner={false} color={playerColor} />
         </div>
       ) : (
         <p>You don't have a player ID.</p>
@@ -243,7 +243,7 @@ function GamePage() {
       {winnerColor ? (
         <div className="winner-banner">
           <h2>The winner is: {winnerColor}</h2>
-          <CircleComponent color={winnerColor} />
+          <CircleComponent isWinner={winnerColor == playerColor} color={winnerColor} />
         </div>
       ) : (
         <p></p>

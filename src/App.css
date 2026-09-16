@@ -225,6 +225,20 @@ button:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
+.circle-container{
+    position: relative;
+}
+
+.circle-crown{
+    position: absolute;
+    bottom: 10px;
+    /* right:10px; */
+    transform: rotate(20deg);
+    /* width: 35px; */
+    width: 160%;
+    height: auto;
+}
+
 .circle{
     width: 28px;
     height: 28px;
