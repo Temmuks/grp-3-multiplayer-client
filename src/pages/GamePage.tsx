@@ -24,6 +24,7 @@ function GamePage() {
   const [playerColor, setPlayerColor] = useState<string>("");
   const [winnerColor, setWinnerColor] = useState<string>("");
   const [playerColors, setPlayerColors] = useState<string[]>([]);
+  const [maxPlayers, setMaxPlayers] = useState<number>(4);
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -91,6 +92,7 @@ function GamePage() {
         })
           .then((response) => response.json())
           .then((dto: GameRoomJoinDTO) => {
+            setMaxPlayers(dto.maxPlayers);
             setPlayerId(dto.playerId);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
             setIsOwner(dto.owner);
@@ -130,6 +132,10 @@ function GamePage() {
       `/topic/game/${gameRoomId}/playerjoin`,
       handlePlayerJoin
     )
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [client])
 
   //Turn
@@ -206,6 +212,11 @@ function GamePage() {
     <div className="gamepagecontainer">
       <div className="gamepage-header">
       <h1>Game Page</h1>
+      {playerColors ? (
+        <PlayerColorsList maxPlayers={maxPlayers} colors={playerColors}/>
+      ) : (
+        <p>No colors</p>
+      )}
       <div className="game-status-panel">
       {playerColor ? (
         <div className="player-color-info">
@@ -215,12 +226,7 @@ function GamePage() {
       ) : (
         <p>You don't have a player ID.</p>
       )}
-
-      {playerColors ? (
-        <PlayerColorsList colors={playerColors}/>
-      ) : (
-        <p>No colors</p>
-      )}
+      
 
       {gameRoomId ? (
         <p className="room-id-text">Game Room ID: {gameRoomId}</p>
