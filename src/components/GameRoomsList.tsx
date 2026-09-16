@@ -74,6 +74,18 @@ function GameRoomsList() {
 
         <button
           onClick={() => {
+            const clientId = localStorage.getItem("ClientId");
+
+            fetch(`${api}/api/owner/gameRooms/${clientId}`, {
+              method: "Delete",
+            });
+          }}
+        >
+          Delete Owner Rooms
+        </button>
+
+        <button
+          onClick={() => {
             fetch(api + "/api/gameRooms", {
               method: "Delete",
             });
