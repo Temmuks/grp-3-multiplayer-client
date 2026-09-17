@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
@@ -14,6 +14,7 @@ function GamePage() {
 
   const { gameRoomId } = useParams();
   const client = useWebSocket();
+  const navigate = useNavigate();
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
@@ -56,12 +57,10 @@ function GamePage() {
   }
 
   function handlePlayerJoin(message: IMessage){
-    const color = message.body;
-    // update playerColors list
-        if (!playerColors.includes(color)){
-          setPlayerColors((prev) => [...prev, color])
-          console.log(color + " joined")
-        }
+    const colors: string[] = JSON.parse(message.body);
+    // update playerColors list    
+    setPlayerColors(colors)
+        
   }
 
   function drawPixel(x: number, y: number, color: string) {
@@ -94,6 +93,7 @@ function GamePage() {
           .then((dto: GameRoomJoinDTO) => {
             setMaxPlayers(dto.maxPlayers);
             setPlayerId(dto.playerId);
+            setPlayerColors(dto.playerColors);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
             setIsOwner(dto.owner);
             setPlayerColor(dto.playerColor);
@@ -213,7 +213,7 @@ function GamePage() {
       <div className="gamepage-header">
       <h1>Game Page</h1>
       {playerColors ? (
-        <PlayerColorsList maxPlayers={maxPlayers} colors={playerColors}/>
+        <PlayerColorsList winnerColor={winnerColor} maxPlayers={maxPlayers} colors={playerColors}/>
       ) : (
         <p>No colors</p>
       )}
@@ -221,7 +221,7 @@ function GamePage() {
       {playerColor ? (
         <div className="player-color-info">
           <p>Your color is: </p>
-          <CircleComponent color={playerColor} />
+          <CircleComponent isWinner={false} color={playerColor} />
         </div>
       ) : (
         <p>You don't have a player ID.</p>
@@ -229,7 +229,7 @@ function GamePage() {
       
 
       {gameRoomId ? (
-        <p className="room-id-text">Game Room ID: {gameRoomId}</p>
+        <></>
       ) : (
         <p className="room-id-text">No Game Room ID was entered in URL</p>
       )}
@@ -243,7 +243,7 @@ function GamePage() {
       {winnerColor ? (
         <div className="winner-banner">
           <h2>The winner is: {winnerColor}</h2>
-          <CircleComponent color={winnerColor} />
+          <CircleComponent isWinner={winnerColor == playerColor} color={winnerColor} />
         </div>
       ) : (
         <p></p>
@@ -256,6 +256,11 @@ function GamePage() {
         height={canvasWidth}
         ref={canvasRef}
       ></canvas>
+      <div>
+        <button onClick={() => {navigate("/")}}>
+          Back
+        </button>
+      </div>
     </div>
   );
 }
