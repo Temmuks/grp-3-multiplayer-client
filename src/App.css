@@ -440,3 +440,9 @@
 .gameroom-card button:hover{
     background-color: #555555;
 }
+
+.colors-list{
+    display: flex;
+    width: auto;
+    justify-content: space-between;
+}
