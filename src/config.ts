@@ -15,7 +15,9 @@ export type GameRoomDisplayDTO = {
 };
 
 export type GameRoomJoinDTO = {
+  maxPlayers: number;
   playerId: string;
+  playerColors: string[];
   gameRoomDisplayDTO: GameRoomDisplayDTO;
   owner: boolean;
   playerColor: string;

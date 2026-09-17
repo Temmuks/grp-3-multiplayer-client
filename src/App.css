@@ -14,7 +14,9 @@
     font-size: 2.2rem;
     margin-bottom: 24px;
     margin-top: 20px;
+    margin-left: 70px;
     letter-spacing: 2px;
+    word-spacing: 50px;
     text-transform: uppercase;
     background: linear-gradient(
         90deg,
@@ -32,6 +34,20 @@
     text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
     filter: drop-shadow(3px 3px 0px #000000);
 }
+.landingpagecontainer h1.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  animation:
+    typing 1.5s steps(15, end) forwards,
+        rainbowShift 5s linear infinite;
+}
+
+@keyframes typing {
+  to {
+        width: calc(15ch + 12px);
+  }
+}
 
 @keyframes rainbowShift {
     0% {
@@ -41,6 +57,166 @@
         background-position: 400% 50%;
     }
 }
+
+/* Snake effect: 100% AI-generated.  START*/
+.game-list-decoration {
+    position: relative;
+    padding: 0 18px;
+}
+
+.game-list-decoration::before,
+.game-list-decoration::after {
+    position: absolute;
+    bottom: 12px;
+    width: 8px;
+    height: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        #00ff66 0 6px,
+        #087a36 6px 8px
+    );
+    box-shadow: 0 0 6px #00ff66;
+    content: "";
+    animation: snake-trail 3.5s linear 1.5s forwards;
+}
+
+.game-list-decoration::before {
+    left: 2px;
+}
+
+.game-list-decoration::after {
+    right: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        #ff3333 0 6px,
+        #8f1515 6px 8px
+    );
+    box-shadow: 0 0 6px #ff3333;
+}
+
+.side-snake {
+    position: absolute;
+    bottom: 12px;
+    z-index: 2;
+    width: 12px;
+    height: 9px;
+    background-color: #00ff66;
+    box-shadow: 0 0 6px #00ff66;
+}
+
+.side-snake--left {
+    left: 0;
+    animation: snake-climb-left 3.5s linear 1.5s forwards;
+}
+
+.side-snake--right {
+    right: 0;
+    background-color: #ff3333;
+    box-shadow: 0 0 6px #ff3333;
+    animation: snake-climb-right 3.5s linear 1.5s forwards;
+}
+
+.snake-turn-trail {
+    position: absolute;
+    top: -8px;
+    z-index: 1;
+    width: 0;
+    height: 8px;
+    background: repeating-linear-gradient(
+        to right,
+        #00ff66 0 6px,
+        #087a36 6px 8px
+    );
+    box-shadow: 0 0 6px #00ff66;
+}
+
+.snake-turn-trail--left {
+    left: 2px;
+    animation: grow-turn-trail 1.225s linear 3.775s forwards;
+}
+
+.snake-turn-trail--right {
+    right: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        #ff3333 0 6px,
+        #8f1515 6px 8px
+    );
+    box-shadow: 0 0 6px #ff3333;
+    animation: grow-turn-trail 1.225s linear 3.775s forwards;
+}
+
+.snake-collision {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    z-index: 3;
+    color: #ff04fb;
+    font-family: 'Press Start 2P', monospace, cursive;
+    font-size: 2rem;
+    opacity: 0;
+    text-shadow: 0 0 8px #eb88ff;
+    transform: translateX(-50%) scale(0);
+    animation: show-snake-collision 0.25s steps(2, end) 5s forwards;
+}
+
+@keyframes snake-climb-left {
+    0% {
+        bottom: 12px;
+        left: 0;
+    }
+
+    65% {
+        bottom: calc(100% - 1px);
+        left: 0;
+    }
+
+    100% {
+        bottom: calc(100% - 1px);
+        left: calc(50% - 6px);
+    }
+}
+
+@keyframes snake-climb-right {
+    0% {
+        bottom: 12px;
+        right: 0;
+    }
+
+    65% {
+        bottom: calc(100% - 1px);
+        right: 0;
+    }
+
+    100% {
+        bottom: calc(100% - 1px);
+        right: calc(50% - 6px);
+    }
+}
+
+@keyframes snake-trail {
+    0% {
+        height: 0;
+    }
+
+    65%, 100% {
+        height: calc(100% - 12px);
+    }
+}
+
+@keyframes grow-turn-trail {
+    to {
+        width: calc(50% - 2px);
+    }
+}
+
+@keyframes show-snake-collision {
+    to {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+/* Snake effect: 100% AI-generated. END */
 .indexpageelements{
     display: flex;
     flex-direction: column;
@@ -104,7 +280,7 @@
         background-color: #444444;
     }
 }
-.indexpageelements button {
+button {
     margin-top: 8px;
     cursor: pointer;
     background-color: #383838;
@@ -113,7 +289,7 @@
     padding: 8px 12px;
     border-radius: 4px;
 }
-.indexpageelements button:hover {
+button:hover {
     background-color: #4a4a4a;
 }
 
@@ -225,6 +401,20 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
+.circle-container{
+    position: relative;
+}
+
+.circle-crown{
+    position: absolute;
+    bottom: 10px;
+    /* right:10px; */
+    transform: rotate(20deg);
+    /* width: 35px; */
+    width: 160%;
+    height: auto;
+}
+
 .circle{
     width: 28px;
     height: 28px;
@@ -263,4 +453,10 @@
 }
 .gameroom-card button:hover{
     background-color: #555555;
+}
+
+.colors-list{
+    display: flex;
+    width: auto;
+    gap: 10px;
 }

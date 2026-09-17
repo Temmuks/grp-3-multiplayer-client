@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useWebSocket } from "../contexts/WebSocketContext";
 import { useEffect, useRef, useState } from "react";
 import type { IMessage } from "@stomp/stompjs";
@@ -7,12 +7,14 @@ import useSound from "use-sound";
 
 import electricSfx from "../../sounds/274210__littlerobotsoundfactory__whoosh_electric_01.wav"
 import CircleComponent from "../components/CircleComponent";
+import PlayerColorsList from "../components/PlayerColorsList";
 
 function GamePage() {
   const api = import.meta.env.VITE_API_URL ?? "";
 
   const { gameRoomId } = useParams();
   const client = useWebSocket();
+  const navigate = useNavigate();
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(200);
   const initialized = useRef(false);
@@ -22,6 +24,8 @@ function GamePage() {
   const [isStarted, setIsStarted] = useState<boolean>(false);
   const [playerColor, setPlayerColor] = useState<string>("");
   const [winnerColor, setWinnerColor] = useState<string>("");
+  const [playerColors, setPlayerColors] = useState<string[]>([]);
+  const [maxPlayers, setMaxPlayers] = useState<number>(4);
 
   // resolution of the canvas, not the actual rendered size
   const canvasWidth = 1000;
@@ -36,9 +40,11 @@ function GamePage() {
     // console.log("got message")
 
     setWinnerColor(JSON.parse(message.body).winnerColor);
+    console.log("playerupdatedto")
 
     JSON.parse(message.body).playerUpdateDTOList.forEach(
       (playerUpdateDTO: PlayerUpdateDTO) => {
+        // draw the positions of the players
         playerUpdateDTO.positions.forEach((positionDTO: PositionDTO) => {
           drawPixel(positionDTO.x, positionDTO.y, playerUpdateDTO.playerColor);
         });
@@ -48,6 +54,13 @@ function GamePage() {
         // console.log("PLAYER Color:" + playerUpdateDTO.playerColor);
       },
     );
+  }
+
+  function handlePlayerJoin(message: IMessage){
+    const colors: string[] = JSON.parse(message.body);
+    // update playerColors list    
+    setPlayerColors(colors)
+        
   }
 
   function drawPixel(x: number, y: number, color: string) {
@@ -78,7 +91,9 @@ function GamePage() {
         })
           .then((response) => response.json())
           .then((dto: GameRoomJoinDTO) => {
+            setMaxPlayers(dto.maxPlayers);
             setPlayerId(dto.playerId);
+            setPlayerColors(dto.playerColors);
             setGridSize(dto.gameRoomDisplayDTO.gridSize);
             setIsOwner(dto.owner);
             setPlayerColor(dto.playerColor);
@@ -107,6 +122,21 @@ function GamePage() {
       subscription.unsubscribe();
     };
   }, [client, gridSize]);
+
+  useEffect(() => {
+    if (!client) {
+      return;
+    }
+
+    const subscription = client.subscribe(
+      `/topic/game/${gameRoomId}/playerjoin`,
+      handlePlayerJoin
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [client])
 
   //Turn
   useEffect(() => {
@@ -182,18 +212,24 @@ function GamePage() {
     <div className="gamepagecontainer">
       <div className="gamepage-header">
       <h1>Game Page</h1>
+      {playerColors ? (
+        <PlayerColorsList winnerColor={winnerColor} maxPlayers={maxPlayers} colors={playerColors}/>
+      ) : (
+        <p>No colors</p>
+      )}
       <div className="game-status-panel">
       {playerColor ? (
         <div className="player-color-info">
           <p>Your color is: </p>
-          <CircleComponent color={playerColor} />
+          <CircleComponent isWinner={false} color={playerColor} />
         </div>
       ) : (
         <p>You don't have a player ID.</p>
       )}
+      
 
       {gameRoomId ? (
-        <p className="room-id-text">Game Room ID: {gameRoomId}</p>
+        <></>
       ) : (
         <p className="room-id-text">No Game Room ID was entered in URL</p>
       )}
@@ -207,7 +243,7 @@ function GamePage() {
       {winnerColor ? (
         <div className="winner-banner">
           <h2>The winner is: {winnerColor}</h2>
-          <CircleComponent color={winnerColor} />
+          <CircleComponent isWinner={winnerColor == playerColor} color={winnerColor} />
         </div>
       ) : (
         <p></p>
@@ -220,6 +256,11 @@ function GamePage() {
         height={canvasWidth}
         ref={canvasRef}
       ></canvas>
+      <div>
+        <button onClick={() => {navigate("/")}}>
+          Back
+        </button>
+      </div>
     </div>
   );
 }
